@@ -1,9 +1,10 @@
 
 import j1939
 
+
 class ParameterGroupNumber(object):
     """Parameter Group Number (PGN).
-    
+
     The PGN are described in SAE J1939/21 and consists of four parts:
       * 1-bit Reserved (sometimes referred to as Extended Data Page)
       * 1-bit Data Page (DP)
@@ -25,7 +26,7 @@ class ParameterGroupNumber(object):
     """
 
     class PGN(object):
-        #TODO:
+        # TODO:
         REQUEST = 59904               # EA00
         #ACKNOWLEDGEMENT = 59392
         ADDRESSCLAIM = 60928          # EE00
@@ -49,23 +50,24 @@ class ParameterGroupNumber(object):
             8-bit PDU Specific
         """
         self.data_page = data_page & 0x01
-        self.pdu_format = pdu_format & 0xFF
+        self.pdu_format = pdu_format & 0xFFF
         self.pdu_specific = pdu_specific & 0xFF
 
     @property
     def is_pdu1_format(self):
         """Indicates Peer-to-Peer communication"""
-        return True if self.pdu_format>=0 and self.pdu_format<=239 else False
+        return True if self.pdu_format >= 0 and self.pdu_format <= 239 else False
 
     @property
     def is_pdu2_format(self):
         """Indicates broadcast communication"""
-        return True if self.pdu_format>=240 and self.pdu_format<=255 else False
-        
+        return True if self.pdu_format >= 240 and self.pdu_format <= 255 else False
+
     def from_message_id(self, mid):
         """Fills in the object from a MessageId given"""
         if not isinstance(mid, j1939.MessageId):
-            raise ValueError("the parameter mid must be an instance of MessageId") 
+            raise ValueError(
+                "the parameter mid must be an instance of MessageId")
 
         self.data_page = (mid.parameter_group_number >> 16) & 0x01
         self.pdu_format = (mid.parameter_group_number >> 8) & 0xFF
@@ -74,6 +76,4 @@ class ParameterGroupNumber(object):
     @property
     def value(self):
         """Returns the value of the PGN"""
-        return (self.data_page << 16) | (self.pdu_format << 8) | self.pdu_specific 
-
-            
+        return (self.data_page << 16) | (self.pdu_format << 8) | self.pdu_specific
